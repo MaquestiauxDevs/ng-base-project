@@ -238,11 +238,40 @@ create_lib_project() {
     # Tests and Coveralls
     print_in_bold_blue ">>Installing Coveralls..."
 
-    npm pkg set 'scripts.test:lib'="ng test $library_name"
-    npm pkg set 'scripts.test:showcase'="ng test $showcase_name"
+    npm pkg set 'scripts.tests:lib'="ng test --no-watch $library_name"
+    npm pkg set 'scripts.tests:showcase'="ng test --no-watch $showcase_name"
 
-    npm pkg set 'scripts.test:lib-w-coverage'="ng test $library_name --code-coverage"
-    npm pkg set 'scripts.test:showcase-w-coverage'="ng test $showcase_name --code-coverage"
+    npm pkg set 'scripts.tests:lib-w-coverage'="ng test --no-watch $library_name --code-coverage"
+    npm pkg set 'scripts.tests:showcase-w-coverage'="ng test --no-watch $showcase_name --code-coverage"
+
+    # Create specific Karma
+    # Change the browser to ChromeHeadless
+    if [ ! -f "$library_name/karma.conf.js" ]; then
+        print_in_bold_blue ">>Installing Karma... for $library_name"
+        ng generate config karma --no-interactive --project=$library_name
+
+        print_in_bold_blue ">>>>Changing browser to ChromeHeadless"
+        sed -i '/browsers:/s/\[.*\]/\[\"ChromeHeadless\"\]/' projects/$library_name/karma.conf.js
+
+        print_in_bold_blue ">>>>Changing type to lcov"
+        sed -i "s/{ type: 'html' },/{ type: 'lcov' }/" projects/$library_name/karma.conf.js
+
+        print_in_bold_blue ">>>>Removing text-summary"
+        sed -i "/{ type: 'text-summary' }/d" projects/$library_name/karma.conf.js
+    fi
+    if [ ! -f "$showcase_name/karma.conf.js" ]; then
+        print_in_bold_blue ">>Installing Karma... for $showcase_name"
+        ng generate config karma --no-interactive --project=$showcase_name
+
+        print_in_bold_blue ">>>>Changing browser to ChromeHeadless"        
+        sed -i '/browsers:/s/\[.*\]/\[\"ChromeHeadless\"\]/' projects/$showcase_name/karma.conf.js
+
+        print_in_bold_blue ">>>>Changing type to lcov"
+        sed -i "s/{ type: 'html' },/{ type: 'lcov' }/" projects/$showcase_name/karma.conf.js
+        
+        print_in_bold_blue ">>>>Removing text-summary"
+        sed -i "/{ type: 'text-summary' }/d" projects/$showcase_name/karma.conf.js
+    fi
 
     print_in_bold_blue ""
     print_in_bold_blue ">>Setup completed."
@@ -252,8 +281,6 @@ create_lib_project() {
     print_in_bold_blue "😊😊😊 All done. Happy coding! 😊😊😊"
 
 }
-
-
 
 print_in_bold_blue ">Initialise environment"
 
