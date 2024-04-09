@@ -101,12 +101,7 @@ finalise_lib_project() {
     npm run format:lint:showcase
 }
 
-create_lib_project() {
-    print_in_bold_blue ">>Creating library project"
-
-    library_name="$V_PROJECT_NAME-lib"
-    showcase_name="$V_PROJECT_NAME-showcase"
-
+setup_create_ng_workspace() {
     # create the angular base project with create-application=false
     print_in_bold_blue ">>>Create the angular base project with create-application=false"
     # Remove the existing project directory if it exists
@@ -124,27 +119,9 @@ create_lib_project() {
     # Install dependencies
     print_in_bold_blue ">>>Installing dependencies"
     npm install --silent
+}
 
-    # Create a starter library
-    print_in_bold_blue ">>>Creating library project"
-    ng g library $library_name
-
-    # Create a starter showcase SCSS and SSR
-    print_in_bold_blue ">>>Creating showcase project"
-    ng g application $showcase_name --style=scss --ssr
-
-    # Add extra files (license, code of conduct, changelog, contributing, readme, .all-contributorsrc)
-    print_in_bold_blue ">>>Adding extra files"
-    copy_extra_files
-
-    # Add build package.json script
-    print_in_bold_blue ">>>Adding build package.json script"
-    npm pkg delete 'scripts.build'
-    npm pkg set 'scripts.build:lib'="ng build $library_name"
-    npm pkg set 'scripts.build:showcase'="ng build $showcase_name"
-    npm pkg set 'scripts.build:all'='npm run build:lib && npm run build:showcase'
-
-    # Extra packages
+setup_prettier() {
     # Prettier
     print_in_bold_blue ">>Installing Prettier..."
     npm install --silent -D prettier
@@ -157,7 +134,9 @@ create_lib_project() {
 
     npm pkg set 'scripts.format:check:all'='npm run format:check:lib && npm run format:check:showcase'
     npm pkg set 'scripts.format:write:all'='npm run format:write:lib && npm run format:write:showcase'
+}
 
+setup_eslint() {
     # Lint
     print_in_bold_blue ">>Installing ESLint..."
     ng add @angular-eslint/schematics --skip-confirmation
@@ -168,7 +147,9 @@ create_lib_project() {
 
     # Starting file
     cp ../sources/.eslintrc.json ./
+}
 
+setup_doctoc() {
     # Doctoc
     print_in_bold_blue ">>Installing Doctoc..."
     npm install --silent -D doctoc
@@ -178,7 +159,9 @@ create_lib_project() {
     # Post build
     print_in_bold_blue ">>Installing Post Build..."
     npm pkg set 'scripts.postbuild:lib'="npm run documentation:toc && cp README.md projects/$library_name/README.md && cp LICENSE projects/$library_name/LICENSE"
+}
 
+setup_all_contributors() {
     # Contributors
     print_in_bold_blue ">>Installing Contributors..."
     npm install --silent -D all-contributors-cli
@@ -188,7 +171,9 @@ create_lib_project() {
 
     # Starting file
     cp ../sources/.all-contributorsrc ./
+}
 
+setup_husky_with_prettyquick_and_commitlint() {
     # Husky
     print_in_bold_blue ">>Installing Husky..."
     npm install --silent -D husky
@@ -222,19 +207,25 @@ create_lib_project() {
     print_in_bold_blue ">>Setup Husky hooks"
     print_in_bold_blue "npm run pretty-quick" > .husky/pre-commit
     print_in_bold_blue "npm run commitlint ${1}" > .husky/commit-msg
+}
 
+setup_replace_json() {
     # Replace Json Property
     print_in_bold_blue ">>Installing Replace Json Property..."
     npm install --silent -D replace-json-property
 
     npm pkg set 'scripts.bump-version'="rjp package.json version '$'VERSION && rjp projects/$library_name/package.json version '$'VERSION"
-   
+}
+
+setup_github_actions() {
     # GitHub Actions
     print_in_bold_blue ">>Copying GitHub Actions samples files..."
     mkdir -p .github/workflows
     cp ../sources/.github/workflows/branch.yml .github/workflows/branch.yml
     cp ../sources/.github/workflows/release.yml .github/workflows/release.yml
+}
 
+setup_test_and_coverage() {
     # Tests and Coveralls
     print_in_bold_blue ">>Installing Coveralls..."
 
@@ -272,6 +263,51 @@ create_lib_project() {
         print_in_bold_blue ">>>>Removing text-summary"
         sed -i "/{ type: 'text-summary' }/d" projects/$showcase_name/karma.conf.js
     fi
+}
+
+create_lib_project() {
+    print_in_bold_blue ">>Creating library project"
+
+    library_name="$V_PROJECT_NAME-lib"
+    showcase_name="$V_PROJECT_NAME-showcase"
+
+    setup_create_ng_workspace
+
+    # Create a starter library
+    print_in_bold_blue ">>>Creating library project"
+    ng g library $library_name
+
+    # Create a starter showcase SCSS and SSR
+    print_in_bold_blue ">>>Creating showcase project"
+    ng g application $showcase_name --style=scss --ssr
+
+    # Add extra files (license, code of conduct, changelog, contributing, readme, .all-contributorsrc)
+    print_in_bold_blue ">>>Adding extra files"
+    copy_extra_files
+
+    # Add build package.json script
+    print_in_bold_blue ">>>Adding build package.json script"
+    npm pkg delete 'scripts.build'
+    npm pkg set 'scripts.build:lib'="ng build $library_name"
+    npm pkg set 'scripts.build:showcase'="ng build $showcase_name"
+    npm pkg set 'scripts.build:all'='npm run build:lib && npm run build:showcase'
+
+    # Extra packages
+    setup_prettier
+
+    setup_eslint
+
+    setup_doctoc
+
+    setup_all_contributors
+
+    setup_husky_with_prettyquick_and_commitlint
+
+    setup_replace_json
+   
+    setup_github_actions
+
+    setup_test_and_coverage
 
     print_in_bold_blue ""
     print_in_bold_blue ">>Setup completed."
