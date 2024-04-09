@@ -22,7 +22,6 @@ print_in_bold_red() {
 
 check_nvm() {
     print_in_bold_blue ">>Check if NVM is sourced successfully"
-    print_in_bold_blue ">>Check if NVM is sourced successfully"
     print_in_bold_blue ">>>Enforce Node.js version to $V_NODE"
     NVM_SCRIPT="$HOME/.nvm/nvm.sh"
     # Check if NVM is sourced
