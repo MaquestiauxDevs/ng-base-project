@@ -2,6 +2,14 @@
 
 To create Angular Base Project, full or for libs
 
+**Do not forget that you will have to adapt the script for your purpose**
+
+**You will need Github secret for the actions**
+
+**You will need a token for publishing on NPM**
+
+**You will need a account on coveralls linked to your Github repository**
+
 ## Resources
 
 ### Packages used
@@ -17,4 +25,8 @@ To create Angular Base Project, full or for libs
 - [Pretty-Quick](https://github.com/prettier/pretty-quick#readme)
 - [CommitLint](https://commitlint.js.org/guides/local-setup.html)
 - [replace-json-property](https://github.com/kreuzerk/replace-json-property#readme)
-- [?]()
+
+### Extra services used
+
+- [coveralls.io](https://coveralls.io/)
+- [npmJs](https://www.npmjs.com/)
