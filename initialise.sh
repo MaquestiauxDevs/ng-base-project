@@ -58,20 +58,100 @@ install_tools() {
     fi
 }
 
+copy_extra_files() {
+    echo "Post creation steps"
+    echo "Copying project files: license, code of conduct, changelog, contributing, readme..."
+    cp ../sources/LICENSE ./LICENSE
+    cp ../sources/CODE_OF_CONDUCT.md ./CODE_OF_CONDUCT.md
+    cp ../sources/CHANGELOG.md ./CHANGELOG.md
+    cp ../sources/CONTRIBUTING.md ./CONTRIBUTING.md
+    cp ../sources/README.md ./README.md
+    cp ../sources/.all-contributorsrc ./
+    echo "Project files copied successfully."
+}
+
+
 create_full_project() {
     # create the angular base project with create-application=true
-    echo "Create the angular base project with create-application=true"
-    sudo rm -Rf $V_PROJECT_NAME
-    ng new $V_PROJECT_NAME
+    echo "Not yet implemented"
 }
 
 create_lib_project() {
+
+    library_name="my-first-library"
+    showcase_name="my-first-library-showcase"
+
     # create the angular base project with create-application=false
     echo "Create the angular base project with create-application=false"
-    sudo rm -Rf $V_PROJECT_NAME
-    ng new $V_PROJECT_NAME --create-application=false
-    cd $V_PROJECT_NAME
+    # Remove the existing project directory if it exists
+    if [ -d "$V_PROJECT_NAME" ]; then
+        echo "Removing existing project directory: $V_PROJECT_NAME"
+        rm -rf "$V_PROJECT_NAME" || { echo "Error: Failed to remove existing directory." >&2; exit 1; }
+    fi
+    ng new $V_PROJECT_NAME --create-application=false  || { echo "Error: Failed to create Angular project." >&2; exit 1; }
+
+    # Change directory to the newly created project
+    cd "$V_PROJECT_NAME" || { echo "Error: Failed to change directory to $V_PROJECT_NAME" >&2; exit 1; }
+
+    # Install dependencies
+    npm install
+
+    # Create a starter library
+    ng g library $library_name
+
+    # Create a starter showcase SCSS and SSR
+    ng g application $showcase_name --style=scss --ssr
+
+    # Add extra files (license, code of conduct, changelog, contributing, readme, .all-contributorsrc)
+    copy_extra_files
+
+    # Add build package.json script
+    npm pkg delete 'scripts.build'
+    npm pkg set 'scripts.build:lib'="ng build $library_name"
+    npm pkg set 'scripts.build:showcase'="ng build $showcase_name"
+    npm pkg set 'scripts.build:all'='npm run build:lib && npm run build:showcase'
+
+    # Extra packages
+    # Prettier
+    echo "Installing Prettier..."
+    npm i -D prettier
+
+    npm pkg set 'scripts.format:check:lib'="prettier --check \"projects/$library_name/src/**/*.{ts,js,html,scss,json}\""
+    npm pkg set 'scripts.format:write:lib'="prettier --write \"projects/$library_name/src/**/*.{ts,js,html,scss,json}\""
+
+    npm pkg set 'scripts.format:check:showcase'="prettier --check \"projects/$showcase_name/src/**/*.{ts,js,html,scss,json}\"",
+    npm pkg set 'scripts.format:write:showcase'="prettier --write \"projects/$showcase_name/src/**/*.{ts,js,html,scss,json}\"",
+
+    npm pkg set 'scripts.format:check:all'='npm run format:check:lib && npm run format:check:showcase'
+    npm pkg set 'scripts.format:write:all'='npm run format:write:lib && npm run format:write:showcase'
+
+    # Lint
+    echo "Installing ESLint..."
+    npm i -D eslint
+
+    npm pkg set 'scripts.format:lint:lib'="eslint --fix \"projects/$library_name/src/**/*.{ts,js}\""
+    npm pkg set 'scripts.format:lint:showcase'="eslint --fix \"projects/$showcase_name/src/**/*.{ts,js}\""
+    npm pkg set 'scripts.format:lint:all'='npm run format:lint:lib && npm run format:lint:showcase'
+
+    # Doctoc
+    echo "Installing Doctoc..."
+    npm i -D doctoc
+
+    npm pkg set 'scripts.documentation:toc'="doctoc README.md"
+
+    # Post build
+    npm pkg set 'scripts.postbuild:lib'="npm run documentation:toc && cp README.md projects/$library_name/README.md && cp LICENSE projects/$library_name/LICENSE"
+
+    # Contributors
+    echo "Installing Contributors..."
+    npm i -D all-contributors-cli
+
+    npm pkg set 'scripts.contributors:generate'="all-contributors generate"
+    npm pkg set 'scripts.contributors:add'="all-contributors add"
+
+    npm run contributors:generate
 }
+
 
 echo "*****************************"
 echo "Initialise environment"
@@ -82,11 +162,10 @@ if [ "$#" -eq 0 ]; then
     exit 1
 fi
 
-echo "First arg: $1"
+echo "Executing script for: $1"
 
 check_nvm
 install_tools
-
 
 if [ "$1" = "full" ]; then
     create_full_project
