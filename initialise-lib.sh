@@ -20,7 +20,7 @@ print_in_bold_red() {
     echo -e "${RED}$1${NC}"
 }
 
-check_nvm() {
+check_nvm_and_node() {
     print_in_bold_blue ">>Check if NVM is sourced successfully"
     print_in_bold_blue ">>>Enforce Node.js version to $V_NODE"
     NVM_SCRIPT="$HOME/.nvm/nvm.sh"
@@ -322,7 +322,7 @@ create_lib_project() {
 
 print_in_bold_blue ">Initialise environment"
 
-check_nvm
+check_nvm_and_node
 
 install_tools
 
