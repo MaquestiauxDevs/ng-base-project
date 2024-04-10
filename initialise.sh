@@ -74,7 +74,26 @@ install_tools() {
     fi
 }
 
+create_lib_and_showcase_projects() {
+    # Create a starter library
+    print_in_bold_blue ">>>Creating library project"
+    ng g library $library_name
+
+    # Create a starter showcase SCSS and SSR
+    print_in_bold_blue ">>>Creating showcase project"
+    ng g application $showcase_name --style=scss --ssr
+
+    # Add build package.json script
+    print_in_bold_blue ">>>Adding build package.json script"
+    npm pkg delete 'scripts.build'
+    npm pkg set 'scripts.build:lib'="ng build $library_name"
+    npm pkg set 'scripts.build:showcase'="ng build $showcase_name"
+    npm pkg set 'scripts.build:all'='npm run build:lib && npm run build:showcase'
+}
+
 copy_extra_files() {
+    # Add extra files (license, code of conduct, changelog, contributing, readme, .all-contributorsrc)
+    print_in_bold_blue ">>>Adding extra files"
     print_in_bold_blue ">>Post creation steps"
     print_in_bold_blue ">>>Copying project files: LICENSE, CODE_OF_CONDUCT.md, CONTRIBUTING.md, README.md"
     cp ../sources/LICENSE ./LICENSE
@@ -272,26 +291,10 @@ create_lib_project() {
 
     setup_create_ng_workspace
 
-    # Create a starter library
-    print_in_bold_blue ">>>Creating library project"
-    ng g library $library_name
+    create_lib_and_showcase_projects
 
-    # Create a starter showcase SCSS and SSR
-    print_in_bold_blue ">>>Creating showcase project"
-    ng g application $showcase_name --style=scss --ssr
-
-    # Add extra files (license, code of conduct, changelog, contributing, readme, .all-contributorsrc)
-    print_in_bold_blue ">>>Adding extra files"
     copy_extra_files
 
-    # Add build package.json script
-    print_in_bold_blue ">>>Adding build package.json script"
-    npm pkg delete 'scripts.build'
-    npm pkg set 'scripts.build:lib'="ng build $library_name"
-    npm pkg set 'scripts.build:showcase'="ng build $showcase_name"
-    npm pkg set 'scripts.build:all'='npm run build:lib && npm run build:showcase'
-
-    # Extra packages
     setup_prettier
 
     setup_eslint
