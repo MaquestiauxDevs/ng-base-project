@@ -322,16 +322,8 @@ create_lib_project() {
 
 print_in_bold_blue ">Initialise environment"
 
-if [ "$#" -eq 0 ]; then
-    print_in_bold_red "Error: No argument provided. Please provide 'full' or 'for-lib'."
-    exit 1
-fi
-
-print_in_bold_blue ">Executing script for: $1"
-
 check_nvm
+
 install_tools
 
-if [ "$1" = "for-lib" ]; then
-    create_lib_project
-fi
+create_lib_project
