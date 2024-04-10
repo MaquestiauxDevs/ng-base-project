@@ -195,7 +195,6 @@ setup_husky_with_prettyquick_and_commitlint() {
     # Husky
     print_in_bold_blue ">>Installing Husky..."
     npm install --silent -D husky
-    print_in_bold_blue ">>>Installing Pretty-Quick..."
 
     npm pkg set 'scripts.husky:init'="husky init"
     npm pkg set 'scripts.husky:prepare'="husky"
@@ -216,7 +215,11 @@ setup_husky_with_prettyquick_and_commitlint() {
         fi
     fi
 
+    print_in_bold_blue ">>>Installing Pretty-Quick..."        
     npm install --silent -D pretty-quick
+    
+    npm pkg set 'scripts.pretty-quick'="pretty-quick --staged"
+
     print_in_bold_blue ">>>Installing Commitlint..."
     npm install --silent -D @commitlint/cli @commitlint/config-conventional
     print_in_bold_blue "export default {extends: ["@commitlint/config-conventional"],};" > commitlint.config.mjs
