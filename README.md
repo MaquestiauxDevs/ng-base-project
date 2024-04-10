@@ -2,13 +2,29 @@
 
 To create Angular Base Project, full or for libs
 
+## Description of the process
+
+This shell script first will create an [Angular workspace](https://angular.io/guide/glossary#workspace).
+
+Within the workspace, it create one library and one showcase application (for library showcasing)
+
+...
+
+## Usage
+
+```bash
+./initialise-lib.sh
+```
+
+## Warning
+
 **Do not forget that you will have to adapt the script for your purpose**
 
-**You will need Github secret for the actions**
+**You will need [Github](https://github.com/) token and secret on your repository for the actions (branch and release)**
 
-**You will need a token for publishing on NPM**
+**You will need a token for publishing on [NPM](https://www.npmjs.com/) to be used in the GitHub actions (release)**
 
-**You will need a account on coveralls linked to your Github repository**
+**You will need a account on [coveralls.io](https://coveralls.io/) linked to your Github repository**
 
 ## Resources
 
