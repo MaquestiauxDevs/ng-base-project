@@ -57,7 +57,7 @@ get_angular_cli_version() {
 
 # Function to install Angular CLI
 install_angular_cli() {
-    npm install --global --silent "@angular/cli@$desired_version"
+    npm install --global --silent "@angular/cli@$V_ANGULAR_VERSION"
 }
 
 install_tools() {
@@ -65,12 +65,12 @@ install_tools() {
     current_angular_version=$(get_angular_cli_version)
     print_in_bold_blue ">>>Current Angular CLI version: $current_angular_version"
     print_in_bold_blue ">>>Required Angular CLI version: $V_ANGULAR_VERSION"
-    if [ "$current_version" = "$desired_version" ]; then
-        print_in_bold_blue ">>>Angular CLI version $desired_version is already installed."
+    if [ "$current_version" = "$V_ANGULAR_VERSION" ]; then
+        print_in_bold_blue ">>>Angular CLI version $V_ANGULAR_VERSION is already installed."
     else
-        print_in_bold_blue ">>>Installing Angular CLI version $desired_version..."
+        print_in_bold_blue ">>>Installing Angular CLI version $V_ANGULAR_VERSION..."
         install_angular_cli
-        print_in_bold_blue ">>>Angular CLI version $desired_version installed successfully."
+        print_in_bold_blue ">>>Angular CLI version $V_ANGULAR_VERSION installed successfully."
     fi
 }
 
