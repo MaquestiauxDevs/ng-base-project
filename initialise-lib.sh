@@ -222,12 +222,12 @@ setup_husky_with_prettyquick_and_commitlint() {
 
     print_in_bold_blue ">>>Installing Commitlint..."
     npm install --silent -D @commitlint/cli @commitlint/config-conventional
-    print_in_bold_blue "export default {extends: ["@commitlint/config-conventional"],};" > commitlint.config.mjs
+    echo "export default {extends: ["@commitlint/config-conventional"],};" > commitlint.config.mjs
     npm pkg set 'scripts.commitlint'="commitlint --edit"
 
     print_in_bold_blue ">>Setup Husky hooks"
-    print_in_bold_blue "npm run pretty-quick" > .husky/pre-commit
-    print_in_bold_blue "npm run commitlint ${1}" > .husky/commit-msg
+    echo "npm run pretty-quick" > .husky/pre-commit
+    echo "npm run commitlint ${1}" > .husky/commit-msg
 }
 
 setup_replace_json() {
